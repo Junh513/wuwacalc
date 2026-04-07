@@ -20,7 +20,7 @@ This is a single static HTML file with no build step or dependencies required.
 3. Select a character and/or weapon to view their materials.
 4. Adjust the level and skill sliders to match your leveling goals.
 
-Alternatively, visit the hosted version at: `placeholder`
+Alternatively, visit the hosted version at: [wuwacalc](https://junh513.github.io/wuwacalc/)
 
 ## Tech Stack
 
