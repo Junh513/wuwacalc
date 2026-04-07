@@ -28,10 +28,6 @@ Alternatively, visit the hosted version at: `placeholder`
 - Vanilla CSS
 - encore.moe API v2 (no API key required)
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
 ## Disclaimer
 
 This project is not affiliated with or endorsed by Kuro Games. All game assets, names, and data are the property of their respective owners. Game data is provided by the encore.moe API.
