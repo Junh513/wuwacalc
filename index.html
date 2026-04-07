@@ -430,6 +430,7 @@ function App() {
   const [weaponRawData, setWeaponRawData] = useState(null);
   const [weaponLevel, setWeaponLevel] = useState(90);
   const [loadingWeapon, setLoadingWeapon] = useState(false);
+  const [show4Star, setShow4Star] = useState(false);
 
   // Collapse state
   const [ascCollapsed, setAscCollapsed] = useState(false);
@@ -458,7 +459,7 @@ function App() {
       if (Array.isArray(items)) items.forEach(i => { map[i.Id] = i; });
       setItemMap(map);
       const wlist = weaponData.weapons || [];
-      setWeapons(wlist.filter(w => w.QualityId === 5).sort((a,b) => a.Name.localeCompare(b.Name)));
+      setWeapons(wlist.filter(w => w.QualityId >= 4).sort((a,b) => a.Name.localeCompare(b.Name)));
       setLoading(false);
     }).catch(() => { setError("Failed to load data."); setLoading(false); });
   }, []);
@@ -605,12 +606,19 @@ function App() {
 
         {/* WEAPON COLUMN */}
         <div className="column">
-          <div className="column-title">5★ Weapon</div>
+          <div className="column-title-row">
+            <div className="column-title">Weapon</div>
+            <label className="toggle-switch" title="Include 4★ weapons">
+              <input type="checkbox" checked={show4Star} onChange={() => setShow4Star(p => !p)} />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">4★</span>
+            </label>
+          </div>
 
           {!selectedWeapon && (
             <SearchDropdown
-              items={selectedChar ? weapons.filter(w => w.TypeName === selectedChar.WeaponType?.Name) : weapons}
-              placeholder="Search 5★ weapon..."
+              items={(selectedChar ? weapons.filter(w => w.TypeName === selectedChar.WeaponType?.Name) : weapons).filter(w => show4Star ? true : w.QualityId === 5)}
+              placeholder="Search weapon..."
               onSelect={selectWeapon}
               getIcon={w => w.Icon}
               getMeta={w => w.TypeName}
@@ -620,10 +628,10 @@ function App() {
 
           {selectedWeapon && (
             <div className="selected-banner">
-              <img src={selectedWeapon.Icon} alt="" className="icon-glow-5" />
+              <img src={selectedWeapon.Icon} alt="" className={`icon-glow-${selectedWeapon.QualityId}`} />
               <div className="info">
                 <h3>{selectedWeapon.Name}</h3>
-                <span>5★ {selectedWeapon.TypeName}</span>
+                <span>{selectedWeapon.QualityId}★ {selectedWeapon.TypeName}</span>
               </div>
               <button className="clear-btn" onClick={clearWeapon}>✕</button>
             </div>
