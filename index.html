@@ -44,7 +44,7 @@
   }
 
   .app {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 40px 20px 80px;
   }
@@ -137,10 +137,30 @@
     border-bottom: 1px solid rgba(255,255,255,0.03);
   }
 
-  .dropdown-item:hover { background: var(--bg-hover); }
+  .dropdown-item:hover, .dropdown-item.active { background: var(--bg-hover); }
   .dropdown-item img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--bg-card); }
   .dropdown-item .d-name { font-weight: 600; font-size: 14px; }
   .dropdown-item .d-meta { font-size: 11px; color: var(--text-muted); }
+
+  /* Collapse toggle */
+  .collapse-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .collapse-header .sub-label { flex: 1; cursor: pointer; }
+
+  .collapse-arrow {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 14px;
+    color: var(--text-muted);
+    padding: 0 4px;
+    transition: transform 0.2s;
+  }
+
+  .collapse-arrow.collapsed { transform: rotate(180deg); }
 
   .selected-banner {
     display: flex;
@@ -304,7 +324,7 @@
   .mat-card.general  { background: var(--general-bg);  border-color: var(--general-border); }
 
   .mat-icon {
-    width: 36px; height: 36px;
+    width: 40px; height: 40px;
     border-radius: 5px;
     object-fit: contain;
     background: rgba(0,0,0,0.2);
@@ -315,7 +335,7 @@
   .mat-details { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 
   .mat-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
     white-space: nowrap;
@@ -325,7 +345,7 @@
 
   .mat-count {
     font-family: 'Chakra Petch', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     flex-shrink: 0;
   }
@@ -380,6 +400,288 @@
   }
 
   .error { text-align: center; padding: 40px; color: #d94a4a; font-size: 14px; }
+
+  /* Conversion Calculator - Slide Panel */
+  .converter-toggle {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--accent);
+    color: var(--bg-primary);
+    border: none;
+    padding: 14px 10px;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    z-index: 200;
+    transition: background 0.2s, padding 0.2s;
+    box-shadow: -2px 0 12px rgba(0,0,0,0.3);
+  }
+
+  .converter-toggle:hover {
+    background: #d9b65e;
+    padding: 14px 14px;
+  }
+
+  .converter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 300;
+    cursor: pointer;
+  }
+
+  .converter-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 520px;
+    max-width: 90vw;
+    min-width: 360px;
+    height: 100vh;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border);
+    z-index: 301;
+    overflow-y: auto;
+    padding: 28px 24px;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.4);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    animation: slideIn 0.25s ease-out;
+  }
+
+  .resize-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 302;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .resize-handle:hover,
+  .resize-handle.dragging { background: rgba(201,164,78,0.15); }
+
+  .resize-grip {
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 16px;
+    font-weight: 700;
+    pointer-events: none;
+    line-height: 1;
+    padding-bottom: 2px;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  .converter-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .converter-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+
+  .converter-close {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+
+  .converter-close:hover {
+    border-color: #d94a4a;
+    color: #d94a4a;
+  }
+
+  .converter-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .family-block {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .family-block:last-child { margin-bottom: 0; }
+
+  .family-name {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .tier-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 80px 80px 100px;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .tier-row:last-child { border-bottom: none; }
+
+  .tier-row img {
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    object-fit: contain;
+    background: rgba(0,0,0,0.2);
+    padding: 2px;
+  }
+
+  .tier-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .tier-mat-name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tier-mat-name.rarity-2 { color: var(--rarity-2); }
+  .tier-mat-name.rarity-3 { color: var(--rarity-3); }
+  .tier-mat-name.rarity-4 { color: var(--rarity-4); }
+  .tier-mat-name.rarity-5 { color: var(--rarity-5); }
+
+  .tier-rarity {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .tier-needed {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  .tier-input {
+    width: 100%;
+    padding: 6px 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .tier-input:focus { border-color: var(--accent); }
+  .tier-input::-webkit-outer-spin-button,
+  .tier-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .tier-input { -moz-appearance: textfield; }
+
+  .tier-result {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .tier-result.surplus { color: var(--rarity-2); }
+  .tier-result.deficit { color: #d94a4a; }
+  .tier-result.exact { color: var(--text-muted); }
+
+  .tier-header {
+    display: grid;
+    grid-template-columns: 40px 1fr 80px 80px 100px;
+    gap: 10px;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tier-header span {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .tier-header span:nth-child(1),
+  .tier-header span:nth-child(2) { text-align: left; }
+
+  .family-summary {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .family-summary.ok { color: var(--rarity-2); }
+  .family-summary.short { color: #d94a4a; }
+
+  @media (max-width: 600px) {
+    .tier-row, .tier-header {
+      grid-template-columns: 32px 1fr 60px 60px 70px;
+      gap: 6px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -566,6 +868,225 @@ function MaterialList({ groups, useGrid }) {
   });
 }
 
+function SearchDropdown({ items, placeholder, onSelect, getIcon, getMeta }) {
+  const [search, setSearch] = useState("");
+  const [showDrop, setShowDrop] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(-1);
+  const ref = useRef(null);
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) { setShowDrop(false); setActiveIdx(-1); } };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const filtered = items.filter(i => i.Name.toLowerCase().includes(search.toLowerCase()));
+
+  useEffect(() => { setActiveIdx(-1); }, [search]);
+
+  // Scroll active item into view
+  useEffect(() => {
+    if (activeIdx >= 0 && listRef.current) {
+      const el = listRef.current.children[activeIdx];
+      if (el) el.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIdx]);
+
+  const handleKey = (e) => {
+    if (!showDrop || filtered.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIdx(prev => (prev + 1) % filtered.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIdx(prev => (prev - 1 + filtered.length) % filtered.length);
+    } else if (e.key === "Enter" && activeIdx >= 0) {
+      e.preventDefault();
+      onSelect(filtered[activeIdx]);
+      setSearch("");
+      setShowDrop(false);
+      setActiveIdx(-1);
+    }
+  };
+
+  return (
+    <div className="search-container" ref={ref}>
+      <input className="search-input" type="text" placeholder={placeholder}
+        value={search}
+        onChange={e => { setSearch(e.target.value); setShowDrop(true); }}
+        onFocus={() => setShowDrop(true)}
+        onKeyDown={handleKey}
+      />
+      {showDrop && filtered.length > 0 && (
+        <div className="dropdown" ref={listRef}>
+          {filtered.map((item, i) => (
+            <div key={item.Id}
+              className={`dropdown-item${i === activeIdx ? " active" : ""}`}
+              onClick={() => { onSelect(item); setSearch(""); setShowDrop(false); setActiveIdx(-1); }}
+              onMouseEnter={() => setActiveIdx(i)}
+            >
+              <img src={getIcon(item)} alt="" />
+              <div>
+                <div className="d-name">{item.Name}</div>
+                <div className="d-meta">{getMeta(item)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function buildFamilies(combinedMats, itemMap) {
+  // Group materials by ID prefix (same family shares all digits except last)
+  // e.g., 41100021, 41100022, 41100023, 41100024 = same family
+  const families = {};
+  combinedMats.forEach(m => {
+    const item = itemMap[m.key];
+    if (!item) return;
+    if (m.qualityId < 2 || m.qualityId > 5) return;
+    if (item.TypeName !== "Weapon and Skill Material") return;
+
+    const familyKey = Math.floor(m.key / 10);
+    if (!families[familyKey]) families[familyKey] = {};
+    families[familyKey][m.qualityId] = {
+      key: m.key,
+      name: m.name,
+      icon: m.icon,
+      qualityId: m.qualityId,
+      needed: m.count
+    };
+  });
+  // Only keep families with 2+ tiers
+  return Object.entries(families)
+    .filter(([_, tiers]) => Object.keys(tiers).length >= 2)
+    .map(([familyKey, tiers]) => ({
+      typeId: familyKey,
+      tiers: [2,3,4,5].filter(q => tiers[q]).map(q => tiers[q])
+    }));
+}
+
+function computeConversion(tiers, owned) {
+  // Work bottom-up: 3 lower = 1 higher
+  const results = [];
+  let carry = 0;
+
+  const sortedTiers = [...tiers].sort((a,b) => a.qualityId - b.qualityId);
+
+  sortedTiers.forEach((tier, i) => {
+    const have = (owned[tier.key] || 0) + carry;
+    const need = tier.needed;
+    const diff = have - need;
+
+    if (diff >= 0) {
+      // Surplus — can carry up
+      carry = Math.floor(diff / 3);
+      results.push({ ...tier, have, diff, status: diff === 0 ? "exact" : "surplus", carried: carry });
+    } else {
+      // Deficit
+      carry = 0;
+      results.push({ ...tier, have, diff, status: "deficit", carried: 0 });
+    }
+  });
+
+  return results;
+}
+
+function ConversionCalculator({ combinedMats, itemMap, owned, setOwned, isOpen, onClose }) {
+  const families = useMemo(() => buildFamilies(combinedMats, itemMap), [combinedMats, itemMap]);
+  const [panelWidth, setPanelWidth] = useState(520);
+  const [dragging, setDragging] = useState(false);
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    if (!dragging) return;
+    const onMove = (e) => {
+      const newWidth = window.innerWidth - e.clientX;
+      setPanelWidth(Math.max(360, Math.min(newWidth, window.innerWidth * 0.9)));
+    };
+    const onUp = () => setDragging(false);
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+    document.body.style.cursor = "ew-resize";
+    document.body.style.userSelect = "none";
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [dragging]);
+
+  if (families.length === 0 || !isOpen) return null;
+
+  const updateOwned = (key, val) => {
+    const num = parseInt(val) || 0;
+    setOwned(prev => ({ ...prev, [key]: num }));
+  };
+
+  return (
+    <>
+      <div className="converter-overlay" onClick={onClose}></div>
+      <div className="converter-panel" ref={panelRef} style={{ width: panelWidth }}>
+        <div className={`resize-handle${dragging ? " dragging" : ""}`} onMouseDown={() => setDragging(true)}>
+          <div className="resize-grip">↔</div>
+        </div>
+        <div className="converter-panel-header">
+          <div className="converter-title">Conversion Calculator</div>
+          <button className="converter-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="converter-subtitle">Input materials you own — converts 3:1 from lower to higher tier</div>
+
+        {families.map(family => {
+          const results = computeConversion(family.tiers, owned);
+          const allMet = results.every(r => r.status !== "deficit");
+          const displayResults = [...results].reverse();
+
+          return (
+            <div className="family-block" key={family.typeId}>
+              <div className="tier-header">
+                <span></span>
+                <span>Material</span>
+                <span>Need</span>
+                <span>Owned</span>
+                <span>Result</span>
+              </div>
+              {displayResults.map(r => (
+                <div className="tier-row" key={r.key}>
+                  <img src={r.icon} alt="" />
+                  <div className="tier-info">
+                    <span className={`tier-mat-name rarity-${r.qualityId}`}>{r.name}</span>
+                    <span className="tier-rarity">{r.qualityId}★</span>
+                  </div>
+                  <div className="tier-needed">×{r.needed.toLocaleString()}</div>
+                  <input
+                    className="tier-input"
+                    type="number"
+                    min="0"
+                    value={owned[r.key] || ""}
+                    placeholder="0"
+                    onChange={e => updateOwned(r.key, e.target.value)}
+                  />
+                  <div className={`tier-result ${r.status}`}>
+                    {r.status === "surplus" && `+${r.diff} surplus`}
+                    {r.status === "deficit" && `${r.diff} short`}
+                    {r.status === "exact" && "Exact"}
+                  </div>
+                </div>
+              ))}
+              <div className={`family-summary ${allMet ? "ok" : "short"}`}>
+                {allMet ? "✓ Sufficient (with conversions)" : "✗ Not enough — farm more materials"}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
 function App() {
   const [chars, setChars] = useState([]);
   const [weapons, setWeapons] = useState([]);
@@ -581,18 +1102,21 @@ function App() {
     Object.fromEntries(SKILL_ORDER.map(s => [s, 10]))
   );
   const [loadingChar, setLoadingChar] = useState(false);
-  const [charSearch, setCharSearch] = useState("");
-  const [charDrop, setCharDrop] = useState(false);
-  const charRef = useRef(null);
 
   // Weapon state
   const [selectedWeapon, setSelectedWeapon] = useState(null);
   const [weaponRawData, setWeaponRawData] = useState(null);
   const [weaponLevel, setWeaponLevel] = useState(90);
   const [loadingWeapon, setLoadingWeapon] = useState(false);
-  const [weaponSearch, setWeaponSearch] = useState("");
-  const [weaponDrop, setWeaponDrop] = useState(false);
-  const weaponRef = useRef(null);
+
+  // Collapse state
+  const [ascCollapsed, setAscCollapsed] = useState(false);
+  const [skillCollapsed, setSkillCollapsed] = useState(false);
+  const [weaponMatCollapsed, setWeaponMatCollapsed] = useState(false);
+
+  // Conversion calculator
+  const [owned, setOwned] = useState({});
+  const [converterOpen, setConverterOpen] = useState(false);
 
   // Load initial data
   useEffect(() => {
@@ -613,24 +1137,14 @@ function App() {
     }).catch(() => { setError("Failed to load data."); setLoading(false); });
   }, []);
 
-  // Click outside
-  useEffect(() => {
-    const handler = (e) => {
-      if (charRef.current && !charRef.current.contains(e.target)) setCharDrop(false);
-      if (weaponRef.current && !weaponRef.current.contains(e.target)) setWeaponDrop(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
   // Fetch character
   const selectChar = async (char) => {
     setSelectedChar(char);
-    setCharSearch("");
-    setCharDrop(false);
     setLoadingChar(true);
     setCharLevel(90);
     setSkillLevels(Object.fromEntries(SKILL_ORDER.map(s => [s, 10])));
+    setAscCollapsed(false);
+    setSkillCollapsed(false);
     try {
       const data = await fetch(`${API}/character/${char.Id}`).then(r => r.json());
       setCharRawData(data);
@@ -643,10 +1157,9 @@ function App() {
   // Fetch weapon
   const selectWeapon = async (weapon) => {
     setSelectedWeapon(weapon);
-    setWeaponSearch("");
-    setWeaponDrop(false);
     setLoadingWeapon(true);
     setWeaponLevel(90);
+    setWeaponMatCollapsed(false);
     try {
       const data = await fetch(`${API}/weapon/${weapon.Id}`).then(r => r.json());
       setWeaponRawData(data);
@@ -670,9 +1183,6 @@ function App() {
   const combinedGroups = groupMaterials(combined);
   const showCombined = combined.length > 0;
 
-  const filteredChars = chars.filter(c => c.Name.toLowerCase().includes(charSearch.toLowerCase()));
-  const filteredWeapons = weapons.filter(w => w.Name.toLowerCase().includes(weaponSearch.toLowerCase()));
-
   const updateSkill = (type, val) => setSkillLevels(prev => ({ ...prev, [type]: val }));
 
   if (loading) return <div className="app"><div className="loading"><div className="spinner"></div><br/>Loading game data...</div></div>;
@@ -691,26 +1201,13 @@ function App() {
           <div className="column-title">Character</div>
 
           {!selectedChar && (
-            <div className="search-container" ref={charRef}>
-              <input className="search-input" type="text" placeholder="Search character..."
-                value={charSearch}
-                onChange={e => { setCharSearch(e.target.value); setCharDrop(true); }}
-                onFocus={() => setCharDrop(true)}
-              />
-              {charDrop && filteredChars.length > 0 && (
-                <div className="dropdown">
-                  {filteredChars.map(c => (
-                    <div key={c.Id} className="dropdown-item" onClick={() => selectChar(c)}>
-                      <img src={c.RoleHeadIcon} alt="" />
-                      <div>
-                        <div className="d-name">{c.Name}</div>
-                        <div className="d-meta">{c.Element?.Name} · {c.WeaponType?.Name}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SearchDropdown
+              items={chars}
+              placeholder="Search character..."
+              onSelect={selectChar}
+              getIcon={c => c.RoleHeadIcon}
+              getMeta={c => `${c.Element?.Name} · ${c.WeaponType?.Name}`}
+            />
           )}
 
           {selectedChar && (
@@ -737,8 +1234,11 @@ function App() {
               {/* Ascension materials */}
               {ascGroups && (
                 <>
-                  <div className="sub-label">Ascension Materials</div>
-                  <MaterialList groups={ascGroups} />
+                  <div className="collapse-header" onClick={() => setAscCollapsed(p => !p)}>
+                    <div className="sub-label">Ascension Materials</div>
+                    <span className={`collapse-arrow${ascCollapsed ? " collapsed" : ""}`}>▼</span>
+                  </div>
+                  {!ascCollapsed && <MaterialList groups={ascGroups} />}
                 </>
               )}
 
@@ -758,8 +1258,11 @@ function App() {
               {/* Skill materials */}
               {skillGroups && (
                 <>
-                  <div className="sub-label">Skill Materials</div>
-                  <MaterialList groups={skillGroups} />
+                  <div className="collapse-header" onClick={() => setSkillCollapsed(p => !p)}>
+                    <div className="sub-label">Skill Materials</div>
+                    <span className={`collapse-arrow${skillCollapsed ? " collapsed" : ""}`}>▼</span>
+                  </div>
+                  {!skillCollapsed && <MaterialList groups={skillGroups} />}
                 </>
               )}
             </>
@@ -773,26 +1276,13 @@ function App() {
           <div className="column-title">5★ Weapon</div>
 
           {!selectedWeapon && (
-            <div className="search-container" ref={weaponRef}>
-              <input className="search-input" type="text" placeholder="Search 5★ weapon..."
-                value={weaponSearch}
-                onChange={e => { setWeaponSearch(e.target.value); setWeaponDrop(true); }}
-                onFocus={() => setWeaponDrop(true)}
-              />
-              {weaponDrop && filteredWeapons.length > 0 && (
-                <div className="dropdown">
-                  {filteredWeapons.map(w => (
-                    <div key={w.Id} className="dropdown-item" onClick={() => selectWeapon(w)}>
-                      <img src={w.Icon} alt="" />
-                      <div>
-                        <div className="d-name">{w.Name}</div>
-                        <div className="d-meta">{w.TypeName}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SearchDropdown
+              items={weapons}
+              placeholder="Search 5★ weapon..."
+              onSelect={selectWeapon}
+              getIcon={w => w.Icon}
+              getMeta={w => w.TypeName}
+            />
           )}
 
           {selectedWeapon && (
@@ -815,13 +1305,38 @@ function App() {
                 <LevelSlider label="Level" value={weaponLevel} stops={LEVEL_STOPS} onChange={setWeaponLevel} />
               </div>
 
-              {weaponGroups && <MaterialList groups={weaponGroups} />}
+              {weaponGroups && (
+                <>
+                  <div className="collapse-header" onClick={() => setWeaponMatCollapsed(p => !p)}>
+                    <div className="sub-label">Weapon Materials</div>
+                    <span className={`collapse-arrow${weaponMatCollapsed ? " collapsed" : ""}`}>▼</span>
+                  </div>
+                  {!weaponMatCollapsed && <MaterialList groups={weaponGroups} />}
+                </>
+              )}
             </>
           )}
 
           {!loadingWeapon && !selectedWeapon && <div className="empty-col">Select a weapon</div>}
         </div>
       </div>
+
+      {/* CONVERSION CALCULATOR TOGGLE + PANEL */}
+      {showCombined && (
+        <>
+          <button className="converter-toggle" onClick={() => setConverterOpen(true)}>
+            Conversion Calculator
+          </button>
+          <ConversionCalculator
+            combinedMats={combined}
+            itemMap={itemMap}
+            owned={owned}
+            setOwned={setOwned}
+            isOpen={converterOpen}
+            onClose={() => setConverterOpen(false)}
+          />
+        </>
+      )}
 
       {/* COMBINED TOTAL */}
       {showCombined && combinedGroups && (
