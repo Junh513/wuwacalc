@@ -448,7 +448,11 @@ function App() {
       fetch(`${API}/weapon`).then(r => r.json())
     ]).then(([charData, itemData, weaponData]) => {
       const list = charData.roleList || charData;
-      setChars(Array.isArray(list) ? list.sort((a,b) => a.Name.localeCompare(b.Name)) : []);
+      const ROVER_IDS = new Set([1502, 1604, 1408]);
+      const deduped = (Array.isArray(list) ? list : []).filter(c =>
+        !c.Name.startsWith("Rover:") || ROVER_IDS.has(c.Id)
+      );
+      setChars(deduped.sort((a,b) => a.Name.localeCompare(b.Name)));
       const items = itemData.itemList || itemData;
       const map = {};
       if (Array.isArray(items)) items.forEach(i => { map[i.Id] = i; });
