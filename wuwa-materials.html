@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wuthering Waves Material Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg-primary: #0a0c10;
+    --bg-secondary: #12151c;
+    --bg-card: #181c26;
+    --bg-hover: #1e2330;
+    --border: #2a2f3e;
+    --text-primary: #e8eaf0;
+    --text-secondary: #8a90a4;
+    --text-muted: #5a5f72;
+    --accent: #c9a44e;
+    --accent-dim: rgba(201,164,78,0.15);
+    --rarity-2: #4db870;
+    --rarity-2-bg: rgba(77,184,112,0.08);
+    --rarity-2-border: rgba(77,184,112,0.25);
+    --rarity-3: #4a9bd9;
+    --rarity-3-bg: rgba(74,155,217,0.08);
+    --rarity-3-border: rgba(74,155,217,0.25);
+    --rarity-4: #b06ec9;
+    --rarity-4-bg: rgba(176,110,201,0.08);
+    --rarity-4-border: rgba(176,110,201,0.25);
+    --rarity-5: #d4a631;
+    --rarity-5-bg: rgba(212,166,49,0.08);
+    --rarity-5-border: rgba(212,166,49,0.25);
+    --general-bg: rgba(100,110,130,0.08);
+    --general-border: rgba(100,110,130,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+  }
+
+  .app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .header h1 {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .header p { font-size: 14px; color: var(--text-muted); letter-spacing: 1px; }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) { .columns { grid-template-columns: 1fr; } }
+
+  .column {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 200px;
+  }
+
+  .column-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .search-container { position: relative; margin-bottom: 16px; }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-muted); }
+
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 100;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .dropdown-item:hover { background: var(--bg-hover); }
+  .dropdown-item img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--bg-card); }
+  .dropdown-item .d-name { font-weight: 600; font-size: 14px; }
+  .dropdown-item .d-meta { font-size: 11px; color: var(--text-muted); }
+
+  .selected-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .selected-banner img { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); }
+  .selected-banner .info h3 { font-family: 'Chakra Petch', sans-serif; font-size: 17px; font-weight: 700; }
+  .selected-banner .info span { font-size: 12px; color: var(--text-secondary); }
+
+  .clear-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+
+  .clear-btn:hover { border-color: #d94a4a; color: #d94a4a; }
+
+  .loading { text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 14px; }
+
+  .spinner {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Sliders */
+  .slider-section {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .slider-row:last-child { margin-bottom: 0; }
+
+  .slider-label {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .slider-value {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg-primary);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg-primary);
+  }
+
+  .slider-section-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  /* Materials */
+  .section { margin-bottom: 16px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .section-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .section-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .mat-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .mat-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid;
+  }
+
+  .mat-card.rarity-2 { background: var(--rarity-2-bg); border-color: var(--rarity-2-border); }
+  .mat-card.rarity-3 { background: var(--rarity-3-bg); border-color: var(--rarity-3-border); }
+  .mat-card.rarity-4 { background: var(--rarity-4-bg); border-color: var(--rarity-4-border); }
+  .mat-card.rarity-5 { background: var(--rarity-5-bg); border-color: var(--rarity-5-border); }
+  .mat-card.general  { background: var(--general-bg);  border-color: var(--general-border); }
+
+  .mat-icon {
+    width: 36px; height: 36px;
+    border-radius: 5px;
+    object-fit: contain;
+    background: rgba(0,0,0,0.2);
+    padding: 3px;
+    flex-shrink: 0;
+  }
+
+  .mat-details { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+
+  .mat-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mat-count {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .mat-count.rarity-2 { color: var(--rarity-2); }
+  .mat-count.rarity-3 { color: var(--rarity-3); }
+  .mat-count.rarity-4 { color: var(--rarity-4); }
+  .mat-count.rarity-5 { color: var(--rarity-5); }
+  .mat-count.general  { color: var(--text-secondary); }
+
+  .empty-col {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); font-size: 13px; padding: 40px 0; text-align: center;
+  }
+
+  .sub-label {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 10px 0 8px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--accent-dim);
+  }
+
+  .sub-label + .section { margin-top: 12px; }
+
+  .combined-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .combined-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .combined-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+
+  .error { text-align: center; padding: 40px; color: #d94a4a; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+const API = "https://api-v2.encore.moe/api/en";
+const GENERAL_KEYS = new Set([2]);
+const LEVEL_STOPS = [1, 20, 40, 50, 60, 70, 80, 90];
+const SKILL_ORDER = ["Normal Attack", "Resonance Skill", "Forte Circuit", "Resonance Liberation", "Intro Skill"];
+const SKILL_LABELS = { "Normal Attack": "Basic Attack", "Resonance Skill": "Resonance Skill", "Forte Circuit": "Forte Circuit", "Resonance Liberation": "Resonance Liberation", "Intro Skill": "Intro Skill" };
+
+const SECTIONS = [
+  { key: "5", label: "5★ Materials", color: "var(--rarity-5)", cls: "rarity-5" },
+  { key: "4", label: "4★ Materials", color: "var(--rarity-4)", cls: "rarity-4" },
+  { key: "3", label: "3★ Materials", color: "var(--rarity-3)", cls: "rarity-3" },
+  { key: "2", label: "2★ Materials", color: "var(--rarity-2)", cls: "rarity-2" },
+  { key: "general", label: "General", color: "var(--text-muted)", cls: "general" },
+];
+
+const isGeneral = (mat) => GENERAL_KEYS.has(mat.key) || mat.qualityId <= 1;
+
+const groupMaterials = (mats) => {
+  if (!mats || mats.length === 0) return null;
+  const groups = { general: [], 2: [], 3: [], 4: [], 5: [] };
+  mats.forEach(m => {
+    if (isGeneral(m)) groups.general.push(m);
+    else if (m.qualityId === 2) groups[2].push(m);
+    else if (m.qualityId === 3) groups[3].push(m);
+    else if (m.qualityId === 4) groups[4].push(m);
+    else if (m.qualityId === 5) groups[5].push(m);
+    else groups.general.push(m);
+  });
+  Object.values(groups).forEach(g => g.sort((a,b) => b.count - a.count));
+  return groups;
+};
+
+const mergeMats = (...arrays) => {
+  const totals = {};
+  arrays.forEach(arr => {
+    if (!arr) return;
+    arr.forEach(m => {
+      if (!totals[m.key]) totals[m.key] = { ...m, count: 0 };
+      totals[m.key].count += m.count;
+    });
+  });
+  return Object.values(totals);
+};
+
+function computeCharAscMats(rawData, targetLevel, itemMap) {
+  if (!rawData) return [];
+  const totals = {};
+  const add = (mat) => {
+    if (!totals[mat.Key]) {
+      const it = itemMap[mat.Key];
+      totals[mat.Key] = { key: mat.Key, name: it?.Name || `Unknown (${mat.Key})`, icon: it?.Icon || "", qualityId: it?.QualityId || 1, count: 0 };
+    }
+    totals[mat.Key].count += mat.Value;
+  };
+  rawData.Breaches.forEach(b => {
+    if (b.MaxLevel <= targetLevel) {
+      (b.BreachConsume || []).forEach(add);
+    }
+  });
+  return Object.values(totals);
+}
+
+function computeCharSkillMats(rawData, skillLevels, itemMap) {
+  if (!rawData) return [];
+  const totals = {};
+  const add = (mat) => {
+    if (!totals[mat.Key]) {
+      const it = itemMap[mat.Key];
+      totals[mat.Key] = { key: mat.Key, name: it?.Name || `Unknown (${mat.Key})`, icon: it?.Icon || "", qualityId: it?.QualityId || 1, count: 0 };
+    }
+    totals[mat.Key].count += mat.Value;
+  };
+
+  rawData.Skills.forEach(skill => {
+    const type = skill.SkillType;
+    const consumes = skill.Consumes || [];
+
+    if (SKILL_ORDER.includes(type)) {
+      // Upgradeable skill — use slider value
+      const target = skillLevels[type] || 10;
+      for (let i = 0; i < target && i < consumes.length; i++) {
+        (consumes[i].Consume || []).forEach(add);
+      }
+    } else {
+      // Non-slider skills (Inherent, Outro, etc.) — always include all
+      consumes.forEach(c => (c.Consume || []).forEach(add));
+    }
+  });
+  return Object.values(totals);
+}
+
+function computeWeaponMats(rawData, targetLevel, itemMap) {
+  if (!rawData) return [];
+  const totals = {};
+  const add = (mat) => {
+    if (!totals[mat.Key]) {
+      const it = itemMap[mat.Key];
+      totals[mat.Key] = { key: mat.Key, name: it?.Name || `Unknown (${mat.Key})`, icon: it?.Icon || "", qualityId: it?.QualityId || 1, count: 0 };
+    }
+    totals[mat.Key].count += mat.Value;
+  };
+
+  rawData.Breaches.forEach(b => {
+    if (b.LevelLimit <= targetLevel) {
+      (b.Consume || []).forEach(add);
+      if (b.GoldConsume) {
+        if (!totals[2]) {
+          const it = itemMap[2];
+          totals[2] = { key: 2, name: it?.Name || "Shell Credit", icon: it?.Icon || "", qualityId: it?.QualityId || 1, count: 0 };
+        }
+        totals[2].count += b.GoldConsume;
+      }
+    }
+  });
+  return Object.values(totals);
+}
+
+function LevelSlider({ label, value, stops, onChange }) {
+  const idx = stops.indexOf(value);
+  return (
+    <div className="slider-row">
+      <span className="slider-label">{label}</span>
+      <input
+        type="range"
+        min={0}
+        max={stops.length - 1}
+        value={idx >= 0 ? idx : stops.length - 1}
+        onChange={e => onChange(stops[parseInt(e.target.value)])}
+      />
+      <span className="slider-value">{value}</span>
+    </div>
+  );
+}
+
+function SkillSlider({ label, value, onChange }) {
+  return (
+    <div className="slider-row">
+      <span className="slider-label">{label}</span>
+      <input
+        type="range"
+        min={1}
+        max={10}
+        value={value}
+        onChange={e => onChange(parseInt(e.target.value))}
+      />
+      <span className="slider-value">{value}</span>
+    </div>
+  );
+}
+
+function MaterialList({ groups, useGrid }) {
+  if (!groups) return null;
+  return SECTIONS.map(s => {
+    const items = groups[s.key] || [];
+    if (items.length === 0) return null;
+    return (
+      <div className="section" key={s.key}>
+        <div className="section-header">
+          <div className="section-dot" style={{ background: s.color }}></div>
+          <span className="section-title" style={{ color: s.color }}>{s.label}</span>
+        </div>
+        <div className={useGrid ? "combined-grid" : "mat-list"}>
+          {items.map(m => (
+            <div key={m.key} className={`mat-card ${s.cls}`}>
+              <img className="mat-icon" src={m.icon} alt="" />
+              <div className="mat-details">
+                <span className="mat-name" title={m.name}>{m.name}</span>
+              </div>
+              <span className={`mat-count ${s.cls}`}>×{m.count.toLocaleString()}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  });
+}
+
+function App() {
+  const [chars, setChars] = useState([]);
+  const [weapons, setWeapons] = useState([]);
+  const [itemMap, setItemMap] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Character state
+  const [selectedChar, setSelectedChar] = useState(null);
+  const [charRawData, setCharRawData] = useState(null);
+  const [charLevel, setCharLevel] = useState(90);
+  const [skillLevels, setSkillLevels] = useState(
+    Object.fromEntries(SKILL_ORDER.map(s => [s, 10]))
+  );
+  const [loadingChar, setLoadingChar] = useState(false);
+  const [charSearch, setCharSearch] = useState("");
+  const [charDrop, setCharDrop] = useState(false);
+  const charRef = useRef(null);
+
+  // Weapon state
+  const [selectedWeapon, setSelectedWeapon] = useState(null);
+  const [weaponRawData, setWeaponRawData] = useState(null);
+  const [weaponLevel, setWeaponLevel] = useState(90);
+  const [loadingWeapon, setLoadingWeapon] = useState(false);
+  const [weaponSearch, setWeaponSearch] = useState("");
+  const [weaponDrop, setWeaponDrop] = useState(false);
+  const weaponRef = useRef(null);
+
+  // Load initial data
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API}/character`).then(r => r.json()),
+      fetch(`${API}/item`).then(r => r.json()),
+      fetch(`${API}/weapon`).then(r => r.json())
+    ]).then(([charData, itemData, weaponData]) => {
+      const list = charData.roleList || charData;
+      setChars(Array.isArray(list) ? list.sort((a,b) => a.Name.localeCompare(b.Name)) : []);
+      const items = itemData.itemList || itemData;
+      const map = {};
+      if (Array.isArray(items)) items.forEach(i => { map[i.Id] = i; });
+      setItemMap(map);
+      const wlist = weaponData.weapons || [];
+      setWeapons(wlist.filter(w => w.QualityId === 5).sort((a,b) => a.Name.localeCompare(b.Name)));
+      setLoading(false);
+    }).catch(() => { setError("Failed to load data."); setLoading(false); });
+  }, []);
+
+  // Click outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (charRef.current && !charRef.current.contains(e.target)) setCharDrop(false);
+      if (weaponRef.current && !weaponRef.current.contains(e.target)) setWeaponDrop(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Fetch character
+  const selectChar = async (char) => {
+    setSelectedChar(char);
+    setCharSearch("");
+    setCharDrop(false);
+    setLoadingChar(true);
+    setCharLevel(90);
+    setSkillLevels(Object.fromEntries(SKILL_ORDER.map(s => [s, 10])));
+    try {
+      const data = await fetch(`${API}/character/${char.Id}`).then(r => r.json());
+      setCharRawData(data);
+    } catch(e) { setError("Failed to load character."); }
+    setLoadingChar(false);
+  };
+
+  const clearChar = () => { setSelectedChar(null); setCharRawData(null); };
+
+  // Fetch weapon
+  const selectWeapon = async (weapon) => {
+    setSelectedWeapon(weapon);
+    setWeaponSearch("");
+    setWeaponDrop(false);
+    setLoadingWeapon(true);
+    setWeaponLevel(90);
+    try {
+      const data = await fetch(`${API}/weapon/${weapon.Id}`).then(r => r.json());
+      setWeaponRawData(data);
+    } catch(e) { setError("Failed to load weapon."); }
+    setLoadingWeapon(false);
+  };
+
+  const clearWeapon = () => { setSelectedWeapon(null); setWeaponRawData(null); };
+
+  // Compute materials
+  const charAscMats = useMemo(() => computeCharAscMats(charRawData, charLevel, itemMap), [charRawData, charLevel, itemMap]);
+  const charSkillMats = useMemo(() => computeCharSkillMats(charRawData, skillLevels, itemMap), [charRawData, skillLevels, itemMap]);
+  const wMats = useMemo(() => computeWeaponMats(weaponRawData, weaponLevel, itemMap), [weaponRawData, weaponLevel, itemMap]);
+
+  const ascGroups = groupMaterials(charAscMats);
+  const skillGroups = groupMaterials(charSkillMats);
+  const weaponGroups = groupMaterials(wMats);
+
+  const allCharMats = charRawData ? [...charAscMats, ...charSkillMats] : null;
+  const combined = mergeMats(allCharMats, wMats.length > 0 ? wMats : null);
+  const combinedGroups = groupMaterials(combined);
+  const showCombined = combined.length > 0;
+
+  const filteredChars = chars.filter(c => c.Name.toLowerCase().includes(charSearch.toLowerCase()));
+  const filteredWeapons = weapons.filter(w => w.Name.toLowerCase().includes(weaponSearch.toLowerCase()));
+
+  const updateSkill = (type, val) => setSkillLevels(prev => ({ ...prev, [type]: val }));
+
+  if (loading) return <div className="app"><div className="loading"><div className="spinner"></div><br/>Loading game data...</div></div>;
+  if (error) return <div className="app"><div className="error">{error}</div></div>;
+
+  return (
+    <div className="app">
+      <div className="header">
+        <h1>Material Calculator</h1>
+        <p>Wuthering Waves</p>
+      </div>
+
+      <div className="columns">
+        {/* CHARACTER COLUMN */}
+        <div className="column">
+          <div className="column-title">Character</div>
+
+          {!selectedChar && (
+            <div className="search-container" ref={charRef}>
+              <input className="search-input" type="text" placeholder="Search character..."
+                value={charSearch}
+                onChange={e => { setCharSearch(e.target.value); setCharDrop(true); }}
+                onFocus={() => setCharDrop(true)}
+              />
+              {charDrop && filteredChars.length > 0 && (
+                <div className="dropdown">
+                  {filteredChars.map(c => (
+                    <div key={c.Id} className="dropdown-item" onClick={() => selectChar(c)}>
+                      <img src={c.RoleHeadIcon} alt="" />
+                      <div>
+                        <div className="d-name">{c.Name}</div>
+                        <div className="d-meta">{c.Element?.Name} · {c.WeaponType?.Name}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedChar && (
+            <div className="selected-banner">
+              <img src={selectedChar.RoleHeadIcon} alt="" />
+              <div className="info">
+                <h3>{selectedChar.Name}</h3>
+                <span>{selectedChar.Element?.Name} · {selectedChar.WeaponType?.Name}</span>
+              </div>
+              <button className="clear-btn" onClick={clearChar}>✕</button>
+            </div>
+          )}
+
+          {loadingChar && <div className="loading"><div className="spinner"></div><br/>Loading...</div>}
+
+          {!loadingChar && charRawData && (
+            <>
+              {/* Level slider */}
+              <div className="slider-section">
+                <div className="slider-section-title">Character Level</div>
+                <LevelSlider label="Level" value={charLevel} stops={LEVEL_STOPS} onChange={setCharLevel} />
+              </div>
+
+              {/* Ascension materials */}
+              {ascGroups && (
+                <>
+                  <div className="sub-label">Ascension Materials</div>
+                  <MaterialList groups={ascGroups} />
+                </>
+              )}
+
+              {/* Skill sliders */}
+              <div className="slider-section">
+                <div className="slider-section-title">Skill Levels</div>
+                {SKILL_ORDER.map(type => (
+                  <SkillSlider
+                    key={type}
+                    label={SKILL_LABELS[type]}
+                    value={skillLevels[type]}
+                    onChange={val => updateSkill(type, val)}
+                  />
+                ))}
+              </div>
+
+              {/* Skill materials */}
+              {skillGroups && (
+                <>
+                  <div className="sub-label">Skill Materials</div>
+                  <MaterialList groups={skillGroups} />
+                </>
+              )}
+            </>
+          )}
+
+          {!loadingChar && !selectedChar && <div className="empty-col">Select a character</div>}
+        </div>
+
+        {/* WEAPON COLUMN */}
+        <div className="column">
+          <div className="column-title">5★ Weapon</div>
+
+          {!selectedWeapon && (
+            <div className="search-container" ref={weaponRef}>
+              <input className="search-input" type="text" placeholder="Search 5★ weapon..."
+                value={weaponSearch}
+                onChange={e => { setWeaponSearch(e.target.value); setWeaponDrop(true); }}
+                onFocus={() => setWeaponDrop(true)}
+              />
+              {weaponDrop && filteredWeapons.length > 0 && (
+                <div className="dropdown">
+                  {filteredWeapons.map(w => (
+                    <div key={w.Id} className="dropdown-item" onClick={() => selectWeapon(w)}>
+                      <img src={w.Icon} alt="" />
+                      <div>
+                        <div className="d-name">{w.Name}</div>
+                        <div className="d-meta">{w.TypeName}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedWeapon && (
+            <div className="selected-banner">
+              <img src={selectedWeapon.Icon} alt="" />
+              <div className="info">
+                <h3>{selectedWeapon.Name}</h3>
+                <span>5★ {selectedWeapon.TypeName}</span>
+              </div>
+              <button className="clear-btn" onClick={clearWeapon}>✕</button>
+            </div>
+          )}
+
+          {loadingWeapon && <div className="loading"><div className="spinner"></div><br/>Loading...</div>}
+
+          {!loadingWeapon && weaponRawData && (
+            <>
+              <div className="slider-section">
+                <div className="slider-section-title">Weapon Level</div>
+                <LevelSlider label="Level" value={weaponLevel} stops={LEVEL_STOPS} onChange={setWeaponLevel} />
+              </div>
+
+              {weaponGroups && <MaterialList groups={weaponGroups} />}
+            </>
+          )}
+
+          {!loadingWeapon && !selectedWeapon && <div className="empty-col">Select a weapon</div>}
+        </div>
+      </div>
+
+      {/* COMBINED TOTAL */}
+      {showCombined && combinedGroups && (
+        <div className="combined-section">
+          <div className="combined-title">
+            Combined Total
+            {selectedChar && selectedWeapon && ` — ${selectedChar.Name} + ${selectedWeapon.Name}`}
+            {selectedChar && !selectedWeapon && ` — ${selectedChar.Name}`}
+            {!selectedChar && selectedWeapon && ` — ${selectedWeapon.Name}`}
+          </div>
+          <MaterialList groups={combinedGroups} useGrid />
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
