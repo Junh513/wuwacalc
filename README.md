@@ -19,6 +19,7 @@ This is a single static HTML file with no build step or dependencies required.
 2. Open `index.html` in any browser.
 3. Select a character and/or weapon to view their materials.
 4. Adjust the level and skill sliders to match your leveling goals.
+5. Use the conversion calculator to determine if you have enough materials with conversion.
 
 Alternatively, visit the hosted version at: [wuwacalc](https://junh513.github.io/wuwacalc/)
 
